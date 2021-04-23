@@ -11,6 +11,7 @@ import AppRestaurantInfo from "@/components/AppRestaurantInfo.vue";
 import { mapState } from "vuex";
 
 export default {
+  name: "DashboardPage",
   computed: {
     ...mapState(["fooddata"])
   },

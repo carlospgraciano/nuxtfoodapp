@@ -17,6 +17,7 @@
 
 <script>
 export default {
+  name: "AppSelect",
   props: {
     select: {
       type: String,

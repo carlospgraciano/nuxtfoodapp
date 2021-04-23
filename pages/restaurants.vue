@@ -15,6 +15,7 @@ import AppSelect from "@/components/AppSelect.vue";
 import { mapState } from "vuex";
 
 export default {
+  name: "RestaurantsPage",
   components: {
     AppRestaurantInfo,
     AppSelect

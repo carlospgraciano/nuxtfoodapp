@@ -32,6 +32,7 @@
 
 <script>
 export default {
+  name: "AppRestaurantInfo",
   props: {
     datasource: {
       type: [Array, Object]

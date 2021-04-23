@@ -8,7 +8,9 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "AppMenu"
+};
 </script>
 
 <style lang="scss" scoped></style>

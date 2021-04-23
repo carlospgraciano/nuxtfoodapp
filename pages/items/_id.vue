@@ -6,19 +6,23 @@
     ></section>
     <section class="details">
       <h1>Taco</h1>
-      <h3>Price: {{ priceFormatting(currentItem.price) }}</h3>
+      <h3>Price: ${{ currentItem.price.toFixed(2) }}</h3>
       <div class="quantity">
         <input type="number" min="1" v-model="quantity" />
-        <button class="primary">
-          Add to Cart - {{ priceFormatting(currentItem.price * quantity) }}
-        </button>
+        <button class="primary">Add to Cart - ${{ combinedPrice }}</button>
       </div>
       <fieldset v-if="currentItem.options">
         <legend>
           <h3>Options</h3>
         </legend>
         <div v-for="option in currentItem.options" :key="option">
-          <input type="radio" :id="option" :value="option" />
+          <input
+            type="radio"
+            name="option"
+            :id="option"
+            :value="option"
+            v-model="itemOption"
+          />
           <label :for="option">{{ option }}</label>
         </div>
       </fieldset>
@@ -29,9 +33,10 @@
         <div v-for="addon in currentItem.addOns" :key="addon">
           <input
             type="checkbox"
+            name="addon"
             :id="addon"
             :value="addon"
-            v-model="selectedAddons"
+            v-model="itemAddons"
           />
           <label :for="addon">{{ addon }}</label>
         </div>
@@ -48,12 +53,13 @@
 import { mapState } from "vuex";
 
 export default {
+  name: "ItemPage",
   data() {
     return {
       id: this.$route.params.id,
       quantity: 1,
-      selectedOption: "",
-      selectedAddons: []
+      itemOption: "",
+      itemAddons: []
     };
   },
   computed: {
@@ -71,11 +77,9 @@ export default {
       }
 
       return result;
-    }
-  },
-  methods: {
-    priceFormatting(price) {
-      return `$${price.toFixed(2)}`;
+    },
+    combinedPrice() {
+      return this.currentItem.price * this.quantity;
     }
   }
 };
