@@ -23,7 +23,7 @@
             name="option"
             :id="option"
             :value="option"
-            v-model="itemOption"
+            v-model="$v.itemOptions.$model"
           />
           <label :for="option">{{ option }}</label>
         </div>
@@ -38,7 +38,7 @@
             name="addon"
             :id="addon"
             :value="addon"
-            v-model="itemAddons"
+            v-model="$v.itemAddons.$model"
           />
           <label :for="addon">{{ addon }}</label>
         </div>
@@ -48,6 +48,10 @@
         Order submitted! <br />
         Check out more
         <nuxt-link exact to="/restaurants">restaurants?</nuxt-link>
+      </AppToast>
+      <AppToast v-if="errors">
+        Please select options and <br />
+        addons before continuing
       </AppToast>
     </section>
     <section class="options">
@@ -59,6 +63,7 @@
 
 <script>
 import { mapState } from "vuex";
+import { required } from "vuelidate/lib/validators";
 import AppToast from "@/components/AppToast.vue";
 
 export default {
@@ -70,10 +75,19 @@ export default {
     return {
       id: this.$route.params.id,
       count: 1,
-      itemOption: "",
+      itemOptions: "",
       itemAddons: [],
-      cartSubmitted: false
+      cartSubmitted: false,
+      errors: false
     };
+  },
+  validations: {
+    itemOptions: {
+      required
+    },
+    itemAddons: {
+      required
+    }
   },
   computed: {
     ...mapState(["fooddata"]),
@@ -101,13 +115,23 @@ export default {
       let formOutput = {
         item: this.currentItem.item,
         count: this.count,
-        options: this.itemOption,
+        options: this.itemOptions,
         addOns: this.itemAddons,
         combinedPrice: this.combinedPrice
       };
 
-      this.cartSubmitted = true;
-      this.$store.commit("addToCart", formOutput);
+      const addonError = this.$v.itemAddons.$invalid;
+      const optionError = this.currentItem.options
+        ? this.$v.itemOptions.$invalid
+        : false;
+
+      if (addonError || optionError) {
+        this.errors = true;
+      } else {
+        this.errors = false;
+        this.cartSubmitted = true;
+        this.$store.commit("addToCart", formOutput);
+      }
     }
   }
 };
