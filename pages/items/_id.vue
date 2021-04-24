@@ -8,8 +8,10 @@
       <h1>Taco</h1>
       <h3>Price: ${{ currentItem.price.toFixed(2) }}</h3>
       <div class="quantity">
-        <input type="number" min="1" v-model="quantity" />
-        <button class="primary">Add to Cart - ${{ combinedPrice }}</button>
+        <input type="number" min="1" v-model="count" />
+        <button @click="addToCart" class="primary">
+          Add to Cart - ${{ combinedPrice }}
+        </button>
       </div>
       <fieldset v-if="currentItem.options">
         <legend>
@@ -41,6 +43,12 @@
           <label :for="addon">{{ addon }}</label>
         </div>
       </fieldset>
+
+      <AppToast v-if="cartSubmitted">
+        Order submitted! <br />
+        Check out more
+        <nuxt-link exact to="/restaurants">restaurants?</nuxt-link>
+      </AppToast>
     </section>
     <section class="options">
       <h1>Description</h1>
@@ -51,15 +59,20 @@
 
 <script>
 import { mapState } from "vuex";
+import AppToast from "@/components/AppToast.vue";
 
 export default {
   name: "ItemPage",
+  components: {
+    AppToast
+  },
   data() {
     return {
       id: this.$route.params.id,
-      quantity: 1,
+      count: 1,
       itemOption: "",
-      itemAddons: []
+      itemAddons: [],
+      cartSubmitted: false
     };
   },
   computed: {
@@ -79,7 +92,22 @@ export default {
       return result;
     },
     combinedPrice() {
-      return this.currentItem.price * this.quantity;
+      const total = this.currentItem.price * this.count;
+      return total.toFixed(2);
+    }
+  },
+  methods: {
+    addToCart() {
+      let formOutput = {
+        item: this.currentItem.item,
+        count: this.count,
+        options: this.itemOption,
+        addOns: this.itemAddons,
+        combinedPrice: this.combinedPrice
+      };
+
+      this.cartSubmitted = true;
+      this.$store.commit("addToCart", formOutput);
     }
   }
 };
@@ -105,6 +133,7 @@ export default {
   }
   .details {
     grid-area: details;
+    position: relative;
   }
   .options {
     grid-area: options;
